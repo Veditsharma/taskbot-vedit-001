@@ -36,7 +36,7 @@ interface TaskEditDialogProps {
 
 const TaskEditDialog = ({ task, isOpen, onClose, onSave }: TaskEditDialogProps) => {
   const [title, setTitle] = useState(task.title);
-  const [priority, setPriority] = useState(task.priority);
+  const [priority, setPriority] = useState<"low" | "medium" | "high">(task.priority);
   const [deadline, setDeadline] = useState<Date | undefined>(
     task.deadline ? new Date(task.deadline) : undefined
   );
@@ -49,6 +49,14 @@ const TaskEditDialog = ({ task, isOpen, onClose, onSave }: TaskEditDialogProps) 
       deadline: deadline?.toISOString(),
     });
     onClose();
+  };
+
+  // This function ensures we only accept valid priority values
+  const handlePriorityChange = (value: string) => {
+    // Validate that the value is one of the allowed priorities
+    if (value === "low" || value === "medium" || value === "high") {
+      setPriority(value);
+    }
   };
 
   return (
@@ -68,7 +76,7 @@ const TaskEditDialog = ({ task, isOpen, onClose, onSave }: TaskEditDialogProps) 
           </div>
           <div className="grid gap-2">
             <Label>Priority</Label>
-            <Select value={priority} onValueChange={setPriority}>
+            <Select value={priority} onValueChange={handlePriorityChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Select priority" />
               </SelectTrigger>
