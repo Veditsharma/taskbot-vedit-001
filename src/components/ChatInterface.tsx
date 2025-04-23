@@ -1,6 +1,6 @@
 
 import { useState, useRef, useEffect } from "react";
-import { PaperPlaneIcon } from "lucide-react";
+import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ChatMessage } from "../types";
@@ -126,7 +126,7 @@ const ChatInterface = ({ onSendMessage }: ChatInterfaceProps) => {
             }}
           />
           <Button type="submit" size="icon" disabled={!message.trim()}>
-            <PaperPlaneIcon className="h-4 w-4" />
+            <Send className="h-4 w-4" />
           </Button>
         </div>
       </form>
