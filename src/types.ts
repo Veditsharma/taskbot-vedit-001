@@ -1,4 +1,3 @@
-
 export interface Task {
   id: string;
   title: string;
@@ -8,6 +7,7 @@ export interface Task {
   column: "not-started" | "in-progress" | "done";
   createdBy: "user" | "bot";
   createdAt: string;
+  deadline?: string;
 }
 
 export interface ChatMessage {

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { Task, COLUMNS } from "../types";
@@ -6,6 +5,7 @@ import { PlusIcon, Check, Clock, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TaskCard from "./TaskCard";
 import { mockTasks } from "../mock-data";
+import { useToast } from "@/hooks/use-toast";
 
 interface KanbanBoardProps {
   onTaskUpdate: (updatedTask: Task) => void;
@@ -14,9 +14,9 @@ interface KanbanBoardProps {
 const KanbanBoard = ({ onTaskUpdate }: KanbanBoardProps) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Simulate API loading
     setTimeout(() => {
       setTasks(mockTasks);
       setIsLoading(false);
@@ -26,10 +26,8 @@ const KanbanBoard = ({ onTaskUpdate }: KanbanBoardProps) => {
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
 
-    // If dropped outside a droppable area
     if (!destination) return;
 
-    // If dropped in the same position
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
@@ -37,23 +35,38 @@ const KanbanBoard = ({ onTaskUpdate }: KanbanBoardProps) => {
       return;
     }
 
-    // Find the task that was dragged
     const draggedTask = tasks.find(task => task.id === draggableId);
     if (!draggedTask) return;
 
-    // Create a new array with the task removed from its original position
     const newTasks = [...tasks];
     const updatedTask = {
       ...draggedTask,
       column: destination.droppableId as "not-started" | "in-progress" | "done"
     };
 
-    // Replace the task with the updated one
     const taskIndex = newTasks.findIndex(task => task.id === draggableId);
     newTasks[taskIndex] = updatedTask;
     
     setTasks(newTasks);
     onTaskUpdate(updatedTask);
+  };
+
+  const handleUpdateTask = (updatedTask: Task) => {
+    const newTasks = tasks.map(task =>
+      task.id === updatedTask.id ? updatedTask : task
+    );
+    setTasks(newTasks);
+    onTaskUpdate(updatedTask);
+    
+    toast({
+      title: "Task updated",
+      description: "The task has been successfully updated.",
+    });
+  };
+
+  const handleDeleteTask = (taskId: string) => {
+    const newTasks = tasks.filter(task => task.id !== taskId);
+    setTasks(newTasks);
   };
 
   const getColumnIcon = (columnId: string) => {
@@ -82,11 +95,6 @@ const KanbanBoard = ({ onTaskUpdate }: KanbanBoardProps) => {
     };
     
     setTasks([...tasks, newTask]);
-  };
-
-  const handleDeleteTask = (taskId: string) => {
-    const newTasks = tasks.filter(task => task.id !== taskId);
-    setTasks(newTasks);
   };
 
   if (isLoading) {
@@ -136,6 +144,7 @@ const KanbanBoard = ({ onTaskUpdate }: KanbanBoardProps) => {
                           <TaskCard 
                             task={task} 
                             onDelete={() => handleDeleteTask(task.id)}
+                            onUpdate={handleUpdateTask}
                           />
                         </div>
                       )}
