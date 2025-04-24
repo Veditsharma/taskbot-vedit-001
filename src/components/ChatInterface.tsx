@@ -162,12 +162,8 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
           </div>
         ) : (
           chatHistory.map((msg) => (
-            <div key={msg.id} className="space-y-2">
-              <div
-                className={`chat-message ${
-                  msg.sender === "user" ? "user" : "bot"
-                }`}
-              >
+            <div key={msg.id} className="space-y-4">
+              <div className={`chat-message ${msg.sender === "user" ? "user" : "bot"}`}>
                 <p className="text-gray-200">{msg.text}</p>
                 <p className="text-xs text-gray-500 mt-1">
                   {new Date(msg.timestamp).toLocaleTimeString([], {
@@ -178,15 +174,14 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
               </div>
               
               {msg.taskSuggestions && msg.taskSuggestions.length > 0 && (
-                <div className="ml-4 space-y-2">
+                <div className="space-y-4">
                   {msg.taskSuggestions.map((task) => (
-                    <div key={task.id} className="bg-[#191919] rounded-lg border border-gray-800 p-3">
-                      <TaskSuggestionForm
-                        task={task}
-                        onSave={handleAddTask}
-                        onCancel={() => handleRejectTask(msg.id)}
-                      />
-                    </div>
+                    <TaskSuggestionForm
+                      key={task.id}
+                      task={task}
+                      onSave={handleAddTask}
+                      onCancel={() => handleRejectTask(msg.id)}
+                    />
                   ))}
                 </div>
               )}
