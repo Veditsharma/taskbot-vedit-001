@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Task } from "../types";
 import { Badge } from "@/components/ui/badge";
@@ -38,62 +37,51 @@ const TaskCard = ({ task, onDelete, onUpdate }: TaskCardProps) => {
   return (
     <>
       <div className="task-card group">
-        <div className="flex justify-between items-start">
-          <h4 className="font-medium mb-2">{task.title}</h4>
-          <div className="flex gap-2">
+        <div className="flex justify-between items-start mb-2">
+          <h4 className="font-medium text-white">{task.title}</h4>
+          <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setIsEditDialogOpen(true);
               }}
-              className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-blue-400"
+              className="text-gray-400 hover:text-white"
             >
-              <Edit size={16} />
+              <Edit size={14} />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete();
               }}
-              className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-400"
+              className="text-gray-400 hover:text-red-400"
             >
-              <Trash2 size={16} />
+              <Trash2 size={14} />
             </button>
           </div>
         </div>
 
         {task.description && (
-          <p className="text-sm text-muted-foreground mb-2">{task.description}</p>
+          <p className="text-sm text-gray-400 mb-3">{task.description}</p>
         )}
 
-        <div className="flex flex-wrap gap-1 mt-2">
-          <Badge variant="outline" className={getPriorityClass(task.priority)}>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="outline" className={`priority-${task.priority}`}>
             {task.priority}
           </Badge>
 
           {task.field && (
-            <Badge variant="outline" className="bg-indigo-900/30 text-indigo-300 border-indigo-700">
-              <Tag className="w-3 h-3 mr-1" />
+            <Badge variant="outline" className="field-tag">
               {task.field}
             </Badge>
           )}
 
           {task.deadline && (
-            <Badge variant="outline" className="bg-blue-900/30 text-blue-300 border-blue-700">
+            <Badge variant="outline" className="date-tag">
               <Calendar className="w-3 h-3 mr-1" />
               {format(new Date(task.deadline), "MMM d")}
             </Badge>
           )}
-
-          {task.tags.map((tag, index) => (
-            <Badge key={index} variant="outline" className={getTagClass(tag)}>
-              {tag}
-            </Badge>
-          ))}
-        </div>
-
-        <div className="text-xs text-muted-foreground mt-2">
-          Added by {task.createdBy === "bot" ? "CreodoBot" : "You"}
         </div>
       </div>
 

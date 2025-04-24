@@ -141,62 +141,52 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
   };
 
   return (
-    <div className="flex flex-col h-full border rounded-lg overflow-hidden bg-card">
-      <div className="p-4 border-b bg-muted/30">
-        <h2 className="font-semibold">CreodoBot Assistant</h2>
-        <p className="text-sm text-muted-foreground">
-          Ask me to create tasks, organize your board, or get suggestions
+    <div className="flex flex-col h-full border border-gray-800 rounded-xl overflow-hidden bg-[#121212]">
+      <div className="p-4 border-b border-gray-800 bg-[#121212]">
+        <h2 className="font-semibold text-white">ChatBOT</h2>
+        <p className="text-sm text-gray-400">
+          Ask me anything, create task, organizing your board.
         </p>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
-            <p className="text-muted-foreground">Loading conversation...</p>
+            <p className="text-gray-400">Loading conversation...</p>
           </div>
         ) : chatHistory.length === 0 ? (
           <div className="flex items-center justify-center h-full">
-            <p className="text-center text-muted-foreground">
-              No messages yet. Start chatting with CreodoBot!
+            <p className="text-center text-gray-400">
+              Start chatting with CreodoBot!
             </p>
           </div>
         ) : (
           chatHistory.map((msg) => (
             <div key={msg.id} className="space-y-2">
               <div
-                className={`flex ${
-                  msg.sender === "user" ? "justify-end" : "justify-start"
+                className={`chat-message ${
+                  msg.sender === "user" ? "user" : "bot"
                 }`}
               >
-                <div
-                  className={`max-w-[80%] p-3 rounded-lg ${
-                    msg.sender === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
-                  }`}
-                >
-                  <p>{msg.text}</p>
-                  <p className="text-xs opacity-70 mt-1">
-                    {new Date(msg.timestamp).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
-                </div>
+                <p className="text-gray-200">{msg.text}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {new Date(msg.timestamp).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
               </div>
               
               {msg.taskSuggestions && msg.taskSuggestions.length > 0 && (
-                <div className="ml-4">
+                <div className="ml-4 space-y-2">
                   {msg.taskSuggestions.map((task) => (
-                    <Card key={task.id} className="mb-2 bg-muted/50 border-muted">
-                      <CardContent className="p-3">
-                        <TaskSuggestionForm
-                          task={task}
-                          onSave={handleAddTask}
-                          onCancel={() => handleRejectTask(msg.id)}
-                        />
-                      </CardContent>
-                    </Card>
+                    <div key={task.id} className="bg-[#191919] rounded-lg border border-gray-800 p-3">
+                      <TaskSuggestionForm
+                        task={task}
+                        onSave={handleAddTask}
+                        onCancel={() => handleRejectTask(msg.id)}
+                      />
+                    </div>
                   ))}
                 </div>
               )}
@@ -206,13 +196,13 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
         <div ref={messagesEndRef} />
       </div>
 
-      <form onSubmit={handleSubmit} className="p-4 border-t bg-card">
+      <form onSubmit={handleSubmit} className="p-4 border-t border-gray-800">
         <div className="flex gap-2">
           <Textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type a message to CreodoBot..."
-            className="min-h-[60px] resize-none"
+            placeholder="Type a message to task bot..."
+            className="chat-input min-h-[44px] resize-none"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -222,7 +212,12 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
               }
             }}
           />
-          <Button type="submit" size="icon" disabled={!message.trim()}>
+          <Button 
+            type="submit" 
+            size="icon"
+            className="bg-primary hover:bg-primary/90"
+            disabled={!message.trim()}
+          >
             <Send className="h-4 w-4" />
           </Button>
         </div>

@@ -6,7 +6,7 @@ import ChatInterface from "./ChatInterface";
 import { useToast } from "@/components/ui/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, Tag, CircleCheck, Flag, Calendar, Plus, Trash2 } from "lucide-react";
+import { Check } from "lucide-react";
 
 const AppLayout = () => {
   const { toast } = useToast();
@@ -21,7 +21,6 @@ const AppLayout = () => {
 
   const handleSendMessage = (message: string) => {
     console.log("Message sent:", message);
-    // In a real implementation, this would send the message to an API
   };
   
   const handleAddTaskFromChat = (task: Task) => {
@@ -29,34 +28,36 @@ const AppLayout = () => {
   };
 
   return (
-    <div className="container mx-auto py-6 px-4 h-screen flex flex-col">
+    <div className="container mx-auto py-6 px-4 h-screen flex flex-col bg-[#0A0A0A]">
       <header className="mb-6">
         <div className="flex items-center gap-2">
-          <CircleCheck className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">CreodoBot TaskTracker</h1>
+          <Check className="h-5 w-5 text-primary rounded-full p-0.5 bg-primary/20" />
+          <h1 className="text-xl font-semibold text-white">Task boat</h1>
         </div>
-        <p className="text-muted-foreground">
-          AI-powered task management made simple
+        <p className="text-sm text-gray-400 ml-7">
+          Clear power task management system
         </p>
       </header>
 
-      <Separator className="my-4" />
-
       <div className="flex flex-col md:flex-row gap-6 flex-1 h-[calc(100%-100px)] overflow-hidden">
         <div className="w-full md:w-2/3 overflow-auto">
-          <Tabs defaultValue="board">
-            <div className="flex justify-between items-center mb-4">
-              <TabsList>
-                <TabsTrigger value="board" className="flex items-center gap-1">
-                  <Tag className="h-4 w-4" /> Board
-                </TabsTrigger>
-                <TabsTrigger value="history" className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" /> History
-                </TabsTrigger>
-              </TabsList>
-            </div>
+          <Tabs defaultValue="board" className="h-full">
+            <TabsList className="bg-transparent border-0 p-0 mb-4">
+              <TabsTrigger 
+                value="board" 
+                className="data-[state=active]:bg-gray-800 data-[state=active]:text-white rounded-md px-4"
+              >
+                Board
+              </TabsTrigger>
+              <TabsTrigger 
+                value="history"
+                className="data-[state=active]:bg-gray-800 data-[state=active]:text-white rounded-md px-4"
+              >
+                History
+              </TabsTrigger>
+            </TabsList>
 
-            <TabsContent value="board" className="mt-0">
+            <TabsContent value="board" className="mt-0 h-[calc(100%-40px)]">
               <KanbanBoard 
                 onTaskUpdate={handleTaskUpdate} 
                 additionalTasks={chatAddedTasks}
@@ -64,10 +65,10 @@ const AppLayout = () => {
             </TabsContent>
             
             <TabsContent value="history" className="mt-0">
-              <div className="bg-card p-6 rounded-lg border text-center">
+              <div className="bg-[#121212] p-6 rounded-xl border border-gray-800 text-center">
                 <h3 className="text-lg font-medium mb-2">Task History</h3>
-                <p className="text-muted-foreground">
-                  This tab will show the history of tasks that were added or modified
+                <p className="text-gray-400">
+                  View your completed and archived tasks here
                 </p>
               </div>
             </TabsContent>
