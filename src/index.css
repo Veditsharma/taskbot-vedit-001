@@ -132,3 +132,35 @@
 .btn-remove {
   @apply px-6 py-3 bg-pink-400 hover:bg-pink-500 text-white font-semibold rounded-full transition-colors;
 }
+
+.task-edit-dialog {
+  @apply bg-[#0A0A0A] border border-gray-800 p-6 rounded-3xl;
+}
+
+.task-edit-input {
+  @apply bg-[#121212] border-gray-800 text-gray-300 h-14 rounded-2xl text-lg;
+}
+
+.task-edit-textarea {
+  @apply bg-[#121212] border-gray-800 text-gray-300 min-h-[100px] rounded-2xl text-lg resize-none;
+}
+
+.priority-toggle {
+  @apply bg-[#121212] hover:bg-[#1a1a1a] border border-gray-800 rounded-full px-6 py-2;
+}
+
+.priority-toggle-selected {
+  @apply border-opacity-50 bg-opacity-20;
+}
+
+.tag-button {
+  @apply flex items-center gap-2 px-4 py-2 rounded-full border transition-colors;
+}
+
+.tag-button-selected {
+  @apply border-indigo-500/50 bg-indigo-500/20 text-indigo-400;
+}
+
+.tag-button-default {
+  @apply border-gray-800 bg-[#121212] text-gray-400 hover:bg-[#1a1a1a];
+}

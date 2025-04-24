@@ -5,28 +5,18 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Tag, CalendarIcon } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface TaskEditDialogProps {
   task: Task;
@@ -56,75 +46,71 @@ const TaskEditDialog = ({ task, isOpen, onClose, onSave }: TaskEditDialogProps) 
     onClose();
   };
 
-  // This function ensures we only accept valid priority values
-  const handlePriorityChange = (value: string) => {
-    // Validate that the value is one of the allowed priorities
-    if (value === "low" || value === "medium" || value === "high") {
-      setPriority(value);
-    }
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Edit Task</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="title">Task Name</Label>
+      <DialogContent className="bg-[#0A0A0A] border border-gray-800 p-6 rounded-3xl max-w-md w-full">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-white">Title</h2>
             <Input
-              id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              className="bg-[#121212] border-gray-800 text-gray-300 h-14 rounded-2xl text-lg"
+              placeholder="Enter task title"
             />
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="description">Description</Label>
+
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-white">Description</h2>
             <Textarea
-              id="description"
-              placeholder="Add a description..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="resize-none"
+              className="bg-[#121212] border-gray-800 text-gray-300 min-h-[100px] rounded-2xl text-lg resize-none"
+              placeholder="Enter task description"
             />
           </div>
-          <div className="grid gap-2">
-            <Label>Priority</Label>
-            <Select value={priority} onValueChange={handlePriorityChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select priority" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-              </SelectContent>
-            </Select>
+
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-white">Priority</h2>
+            <ToggleGroup 
+              type="single" 
+              value={priority}
+              onValueChange={(value) => {
+                if (value) setPriority(value as "low" | "medium" | "high");
+              }}
+              className="flex justify-start gap-3"
+            >
+              <ToggleGroupItem 
+                value="high"
+                className="bg-[#121212] hover:bg-[#1a1a1a] data-[state=on]:bg-red-500/20 data-[state=on]:text-red-400 data-[state=on]:border-red-500/50 border border-gray-800 rounded-full px-6 py-2"
+              >
+                High
+              </ToggleGroupItem>
+              <ToggleGroupItem 
+                value="medium"
+                className="bg-[#121212] hover:bg-[#1a1a1a] data-[state=on]:bg-yellow-500/20 data-[state=on]:text-yellow-400 data-[state=on]:border-yellow-500/50 border border-gray-800 rounded-full px-6 py-2"
+              >
+                Medium
+              </ToggleGroupItem>
+              <ToggleGroupItem 
+                value="low"
+                className="bg-[#121212] hover:bg-[#1a1a1a] data-[state=on]:bg-green-500/20 data-[state=on]:text-green-400 data-[state=on]:border-green-500/50 border border-gray-800 rounded-full px-6 py-2"
+              >
+                Low
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
-          <div className="grid gap-2">
-            <Label>Field/Category</Label>
-            <Select value={field} onValueChange={setField}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select field" />
-              </SelectTrigger>
-              <SelectContent>
-                {FIELD_OPTIONS.map(option => (
-                  <SelectItem key={option} value={option}>{option}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-2">
-            <Label>Deadline</Label>
+
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-white">Date</h2>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="justify-start text-left font-normal"
+                  className="w-full bg-[#121212] border-gray-800 text-gray-300 h-14 rounded-2xl text-lg justify-start"
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {deadline ? format(deadline, "PPP") : "Pick a date"}
+                  <CalendarIcon className="mr-3 h-5 w-5" />
+                  {deadline ? format(deadline, "MMMM do, yyyy") : "Select date"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -133,18 +119,48 @@ const TaskEditDialog = ({ task, isOpen, onClose, onSave }: TaskEditDialogProps) 
                   selected={deadline}
                   onSelect={setDeadline}
                   initialFocus
-                  className="pointer-events-auto"
+                  className="bg-[#121212] rounded-xl border border-gray-800 pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
           </div>
+
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-white">Tags</h2>
+            <div className="flex flex-wrap gap-2">
+              {FIELD_OPTIONS.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => setField(option)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-colors ${
+                    field === option
+                      ? "border-indigo-500/50 bg-indigo-500/20 text-indigo-400"
+                      : "border-gray-800 bg-[#121212] text-gray-400 hover:bg-[#1a1a1a]"
+                  }`}
+                >
+                  <Tag className="h-4 w-4" />
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button
+              onClick={onClose}
+              variant="outline"
+              className="rounded-full px-6 bg-transparent border-gray-800 hover:bg-[#1a1a1a] text-gray-300"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              className="rounded-full px-6 bg-indigo-500 hover:bg-indigo-600 text-white"
+            >
+              Save Changes
+            </Button>
+          </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave}>Save changes</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
