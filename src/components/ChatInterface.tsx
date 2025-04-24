@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Send, Plus, X, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import TaskSuggestionForm from "./TaskSuggestionForm";
 
 interface ChatInterfaceProps {
   onSendMessage: (message: string) => void;
@@ -24,7 +24,6 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Simulate API loading
     setTimeout(() => {
       setChatHistory(mockChatMessages);
       setIsLoading(false);
@@ -54,9 +53,7 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
     onSendMessage(message);
     setMessage("");
 
-    // Simulate bot response with task suggestions
     setTimeout(() => {
-      // Generate a task suggestion based on the message
       const taskSuggestions = generateTaskSuggestions(message);
       
       const botResponse: ChatMessage = {
@@ -72,30 +69,40 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
   };
 
   const generateTaskSuggestions = (userMessage: string): Task[] => {
-    // This is a simplified mock implementation
-    // In a real app, this would use NLP/AI to extract tasks
+    const words = userMessage.toLowerCase().split(' ');
     
-    const mockFields = ["Design", "Development", "Marketing", "Research"];
-    const randomField = mockFields[Math.floor(Math.random() * mockFields.length)];
-    
-    // Create a deadline between tomorrow and 7 days from now
-    const deadline = new Date();
-    deadline.setDate(deadline.getDate() + Math.floor(Math.random() * 7) + 1);
-    
-    return [
-      {
-        id: `task-suggestion-${Date.now()}`,
-        title: `Task from chat: ${userMessage.substring(0, 30)}${userMessage.length > 30 ? '...' : ''}`,
-        description: `Generated from your message: "${userMessage}"`,
-        priority: "medium",
-        tags: ["chat-generated"],
-        column: "not-started",
-        createdBy: "bot",
-        createdAt: new Date().toISOString(),
-        deadline: deadline.toISOString(),
-        field: randomField
-      }
-    ];
+    let priority: "low" | "medium" | "high" = "medium";
+    if (words.some(w => ["urgent", "asap", "important", "critical"].includes(w))) {
+      priority = "high";
+    } else if (words.some(w => ["whenever", "eventually", "someday"].includes(w))) {
+      priority = "low";
+    }
+
+    let field = FIELD_OPTIONS.find(f =>
+      words.some(w => w.includes(f.toLowerCase()))
+    );
+
+    let deadline = new Date();
+    if (words.includes("tomorrow")) {
+      deadline.setDate(deadline.getDate() + 1);
+    } else if (words.includes("next") && words.includes("week")) {
+      deadline.setDate(deadline.getDate() + 7);
+    } else {
+      deadline.setDate(deadline.getDate() + 3);
+    }
+
+    return [{
+      id: `task-suggestion-${Date.now()}`,
+      title: userMessage.split('.')[0],
+      description: userMessage,
+      priority,
+      tags: ["chat-generated"],
+      column: "not-started",
+      createdBy: "bot",
+      createdAt: new Date().toISOString(),
+      deadline: deadline.toISOString(),
+      field: field || "Other"
+    }];
   };
 
   const handleAddTask = (task: Task) => {
@@ -105,10 +112,9 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
       description: `"${task.title}" has been added to your board.`,
     });
     
-    // Add a confirmation message in the chat
     const confirmationMessage: ChatMessage = {
       id: `msg-${Date.now()}`,
-      text: `I've added "${task.title}" to your task board.`,
+      text: `I've added "${task.title}" to your task board with priority ${task.priority}${task.deadline ? ` and deadline ${format(new Date(task.deadline), "PPP")}` : ''}.`,
       sender: "bot",
       timestamp: new Date().toISOString(),
     };
@@ -117,7 +123,6 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
   };
 
   const handleRejectTask = (messageId: string) => {
-    // Remove the task suggestions from the message
     setChatHistory(prev => prev.map(msg => {
       if (msg.id === messageId) {
         return { ...msg, taskSuggestions: undefined };
@@ -125,7 +130,6 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
       return msg;
     }));
     
-    // Add a confirmation message
     const rejectionMessage: ChatMessage = {
       id: `msg-${Date.now()}`,
       text: "No problem. I won't add those tasks to your board.",
@@ -186,50 +190,11 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
                   {msg.taskSuggestions.map((task) => (
                     <Card key={task.id} className="mb-2 bg-muted/50 border-muted">
                       <CardContent className="p-3">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-medium">{task.title}</h4>
-                          <div className="flex gap-2">
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="h-7 px-2"
-                              onClick={() => handleAddTask(task)}
-                            >
-                              <Plus className="h-4 w-4 mr-1" /> Add
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              className="h-7 px-2 text-muted-foreground"
-                              onClick={() => handleRejectTask(msg.id)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                        
-                        {task.description && (
-                          <p className="text-sm text-muted-foreground mb-2">{task.description}</p>
-                        )}
-                        
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          <Badge variant="outline" className={task.priority === "low" ? "priority-low" : task.priority === "medium" ? "priority-medium" : "priority-high"}>
-                            {task.priority}
-                          </Badge>
-                          
-                          {task.field && (
-                            <Badge variant="outline" className="bg-indigo-900/30 text-indigo-300 border-indigo-700">
-                              {task.field}
-                            </Badge>
-                          )}
-                          
-                          {task.deadline && (
-                            <Badge variant="outline" className="bg-blue-900/30 text-blue-300 border-blue-700">
-                              <Calendar className="w-3 h-3 mr-1" />
-                              {format(new Date(task.deadline), "MMM d")}
-                            </Badge>
-                          )}
-                        </div>
+                        <TaskSuggestionForm
+                          task={task}
+                          onSave={handleAddTask}
+                          onCancel={() => handleRejectTask(msg.id)}
+                        />
                       </CardContent>
                     </Card>
                   ))}
