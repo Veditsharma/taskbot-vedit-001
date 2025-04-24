@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Task } from "../types";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Calendar, Edit } from "lucide-react";
+import { Trash2, Calendar, Edit, Tag } from "lucide-react";
 import { format } from "date-fns";
 import TaskEditDialog from "./TaskEditDialog";
 
@@ -32,7 +32,7 @@ const TaskCard = ({ task, onDelete, onUpdate }: TaskCardProps) => {
     if (tag.includes("feature")) return "tag-feature";
     if (tag.includes("research")) return "tag-research";
     if (tag.includes("design")) return "tag-design";
-    return "bg-gray-100 text-gray-800";
+    return "bg-gray-800 text-gray-300 border border-gray-600";
   };
 
   return (
@@ -46,7 +46,7 @@ const TaskCard = ({ task, onDelete, onUpdate }: TaskCardProps) => {
                 e.stopPropagation();
                 setIsEditDialogOpen(true);
               }}
-              className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 hover:text-blue-500"
+              className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-blue-400"
             >
               <Edit size={16} />
             </button>
@@ -55,7 +55,7 @@ const TaskCard = ({ task, onDelete, onUpdate }: TaskCardProps) => {
                 e.stopPropagation();
                 onDelete();
               }}
-              className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 hover:text-red-500"
+              className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-400"
             >
               <Trash2 size={16} />
             </button>
@@ -71,8 +71,15 @@ const TaskCard = ({ task, onDelete, onUpdate }: TaskCardProps) => {
             {task.priority}
           </Badge>
 
+          {task.field && (
+            <Badge variant="outline" className="bg-indigo-900/30 text-indigo-300 border-indigo-700">
+              <Tag className="w-3 h-3 mr-1" />
+              {task.field}
+            </Badge>
+          )}
+
           {task.deadline && (
-            <Badge variant="outline" className="bg-blue-100 text-blue-800">
+            <Badge variant="outline" className="bg-blue-900/30 text-blue-300 border-blue-700">
               <Calendar className="w-3 h-3 mr-1" />
               {format(new Date(task.deadline), "MMM d")}
             </Badge>

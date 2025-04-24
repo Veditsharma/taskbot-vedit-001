@@ -10,6 +10,7 @@ import { Check, Tag, CircleCheck, Flag, Calendar, Plus, Trash2 } from "lucide-re
 
 const AppLayout = () => {
   const { toast } = useToast();
+  const [chatAddedTasks, setChatAddedTasks] = useState<Task[]>([]);
   
   const handleTaskUpdate = (task: Task) => {
     toast({
@@ -21,6 +22,10 @@ const AppLayout = () => {
   const handleSendMessage = (message: string) => {
     console.log("Message sent:", message);
     // In a real implementation, this would send the message to an API
+  };
+  
+  const handleAddTaskFromChat = (task: Task) => {
+    setChatAddedTasks(prev => [...prev, task]);
   };
 
   return (
@@ -52,7 +57,10 @@ const AppLayout = () => {
             </div>
 
             <TabsContent value="board" className="mt-0">
-              <KanbanBoard onTaskUpdate={handleTaskUpdate} />
+              <KanbanBoard 
+                onTaskUpdate={handleTaskUpdate} 
+                additionalTasks={chatAddedTasks}
+              />
             </TabsContent>
             
             <TabsContent value="history" className="mt-0">
@@ -67,7 +75,10 @@ const AppLayout = () => {
         </div>
 
         <div className="w-full md:w-1/3 h-full">
-          <ChatInterface onSendMessage={handleSendMessage} />
+          <ChatInterface 
+            onSendMessage={handleSendMessage} 
+            onAddTask={handleAddTaskFromChat}
+          />
         </div>
       </div>
     </div>

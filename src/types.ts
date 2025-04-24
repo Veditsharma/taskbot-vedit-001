@@ -1,3 +1,4 @@
+
 export interface Task {
   id: string;
   title: string;
@@ -8,6 +9,7 @@ export interface Task {
   createdBy: "user" | "bot";
   createdAt: string;
   deadline?: string;
+  field?: string; // Added field/category
 }
 
 export interface ChatMessage {
@@ -15,6 +17,7 @@ export interface ChatMessage {
   text: string;
   sender: "user" | "bot";
   timestamp: string;
+  taskSuggestions?: Task[]; // Added task suggestions
 }
 
 export interface Column {
@@ -26,4 +29,16 @@ export const COLUMNS: Column[] = [
   { id: "not-started", title: "Not Started" },
   { id: "in-progress", title: "In Progress" },
   { id: "done", title: "Done" }
+];
+
+export const FIELD_OPTIONS = [
+  "Design",
+  "Development",
+  "Marketing",
+  "Research",
+  "LinkedIn",
+  "Content",
+  "Personal",
+  "Health",
+  "Other"
 ];

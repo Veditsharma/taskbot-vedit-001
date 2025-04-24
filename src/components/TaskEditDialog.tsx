@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Task } from "../types";
+import { Task, FIELD_OPTIONS } from "../types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -36,7 +37,9 @@ interface TaskEditDialogProps {
 
 const TaskEditDialog = ({ task, isOpen, onClose, onSave }: TaskEditDialogProps) => {
   const [title, setTitle] = useState(task.title);
+  const [description, setDescription] = useState(task.description || '');
   const [priority, setPriority] = useState<"low" | "medium" | "high">(task.priority);
+  const [field, setField] = useState(task.field || '');
   const [deadline, setDeadline] = useState<Date | undefined>(
     task.deadline ? new Date(task.deadline) : undefined
   );
@@ -45,7 +48,9 @@ const TaskEditDialog = ({ task, isOpen, onClose, onSave }: TaskEditDialogProps) 
     onSave({
       ...task,
       title,
+      description,
       priority,
+      field,
       deadline: deadline?.toISOString(),
     });
     onClose();
@@ -75,6 +80,16 @@ const TaskEditDialog = ({ task, isOpen, onClose, onSave }: TaskEditDialogProps) 
             />
           </div>
           <div className="grid gap-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              placeholder="Add a description..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="resize-none"
+            />
+          </div>
+          <div className="grid gap-2">
             <Label>Priority</Label>
             <Select value={priority} onValueChange={handlePriorityChange}>
               <SelectTrigger>
@@ -84,6 +99,19 @@ const TaskEditDialog = ({ task, isOpen, onClose, onSave }: TaskEditDialogProps) 
                 <SelectItem value="low">Low</SelectItem>
                 <SelectItem value="medium">Medium</SelectItem>
                 <SelectItem value="high">High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-2">
+            <Label>Field/Category</Label>
+            <Select value={field} onValueChange={setField}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select field" />
+              </SelectTrigger>
+              <SelectContent>
+                {FIELD_OPTIONS.map(option => (
+                  <SelectItem key={option} value={option}>{option}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

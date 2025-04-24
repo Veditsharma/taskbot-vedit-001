@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { Task, COLUMNS } from "../types";
@@ -9,19 +10,35 @@ import { useToast } from "@/hooks/use-toast";
 
 interface KanbanBoardProps {
   onTaskUpdate: (updatedTask: Task) => void;
+  onAddTask?: (task: Task) => void;
+  additionalTasks?: Task[];
 }
 
-const KanbanBoard = ({ onTaskUpdate }: KanbanBoardProps) => {
+const KanbanBoard = ({ onTaskUpdate, onAddTask, additionalTasks = [] }: KanbanBoardProps) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
     setTimeout(() => {
-      setTasks(mockTasks);
+      setTasks([...mockTasks, ...additionalTasks]);
       setIsLoading(false);
     }, 1000);
-  }, []);
+  }, [additionalTasks]);
+
+  // Effect to handle new tasks added through props
+  useEffect(() => {
+    if (additionalTasks.length > 0 && !isLoading) {
+      // Add any new tasks that aren't already in the tasks array
+      const newTasks = additionalTasks.filter(
+        newTask => !tasks.some(task => task.id === newTask.id)
+      );
+      
+      if (newTasks.length > 0) {
+        setTasks(prevTasks => [...prevTasks, ...newTasks]);
+      }
+    }
+  }, [additionalTasks, isLoading, tasks]);
 
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -67,13 +84,18 @@ const KanbanBoard = ({ onTaskUpdate }: KanbanBoardProps) => {
   const handleDeleteTask = (taskId: string) => {
     const newTasks = tasks.filter(task => task.id !== taskId);
     setTasks(newTasks);
+    
+    toast({
+      title: "Task deleted",
+      description: "The task has been removed from your board.",
+    });
   };
 
   const getColumnIcon = (columnId: string) => {
     switch(columnId) {
       case "not-started": return <Circle className="h-4 w-4 text-gray-400" />;
-      case "in-progress": return <Clock className="h-4 w-4 text-blue-500" />;
-      case "done": return <Check className="h-4 w-4 text-green-500" />;
+      case "in-progress": return <Clock className="h-4 w-4 text-blue-400" />;
+      case "done": return <Check className="h-4 w-4 text-green-400" />;
       default: return null;
     }
   };
@@ -95,6 +117,15 @@ const KanbanBoard = ({ onTaskUpdate }: KanbanBoardProps) => {
     };
     
     setTasks([...tasks, newTask]);
+    
+    if (onAddTask) {
+      onAddTask(newTask);
+    }
+    
+    toast({
+      title: "Task created",
+      description: "A new task has been added to your board.",
+    });
   };
 
   if (isLoading) {

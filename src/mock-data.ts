@@ -1,108 +1,92 @@
 
-import { Task, ChatMessage } from "./types";
+import { Task, ChatMessage } from './types';
 
+// Sample tasks for the board
 export const mockTasks: Task[] = [
   {
-    id: "task-1",
-    title: "FAQs_Interview",
-    description: "Prepare FAQ documents for the upcoming interview",
-    priority: "low",
-    tags: ["feature request"],
-    column: "not-started",
-    createdBy: "user",
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    id: 'task-1',
+    title: 'Design new landing page',
+    description: 'Create wireframes and mockups for the new landing page',
+    priority: 'high',
+    tags: ['design', 'homepage'],
+    column: 'in-progress',
+    createdBy: 'user',
+    createdAt: '2023-04-01T10:00:00Z',
+    deadline: '2023-04-10T00:00:00Z',
+    field: 'Design'
   },
   {
-    id: "task-2",
-    title: "Resume_College",
-    description: "Update college resume with recent projects",
-    priority: "medium",
-    tags: ["design"],
-    column: "not-started",
-    createdBy: "user",
-    createdAt: new Date(Date.now() - 172800000).toISOString(),
+    id: 'task-2',
+    title: 'Fix payment integration',
+    description: 'Resolve issues with Stripe payment processing',
+    priority: 'high',
+    tags: ['feature'],
+    column: 'not-started',
+    createdBy: 'user',
+    createdAt: '2023-04-02T14:30:00Z',
+    deadline: '2023-04-15T00:00:00Z',
+    field: 'Development'
   },
   {
-    id: "task-3",
-    title: "Rethink system internship Post",
-    description: "Draft and review internship posting for the system team",
-    priority: "high",
-    tags: ["research"],
-    column: "in-progress",
-    createdBy: "user",
-    createdAt: new Date(Date.now() - 259200000).toISOString(),
+    id: 'task-3',
+    title: 'Create social media strategy',
+    description: 'Plan content calendar for next month',
+    priority: 'medium',
+    tags: ['research', 'marketing'],
+    column: 'not-started',
+    createdBy: 'bot',
+    createdAt: '2023-04-03T09:15:00Z',
+    field: 'Marketing'
   },
   {
-    id: "task-4",
-    title: "Modern design",
-    description: "Create modern design concepts for the homepage",
-    priority: "medium",
-    tags: ["design"],
-    column: "done",
-    createdBy: "bot",
-    createdAt: new Date(Date.now() - 345600000).toISOString(),
+    id: 'task-4',
+    title: 'Update user documentation',
+    description: 'Add new features to the help section',
+    priority: 'low',
+    tags: ['documentation'],
+    column: 'done',
+    createdBy: 'user',
+    createdAt: '2023-03-28T11:45:00Z',
+    deadline: '2023-04-05T00:00:00Z',
+    field: 'Content'
   },
   {
-    id: "task-5",
-    title: "Singapore post",
-    description: "Write blog post about Singapore tech scene",
-    priority: "medium",
-    tags: ["feature request"],
-    column: "done",
-    createdBy: "user",
-    createdAt: new Date(Date.now() - 432000000).toISOString(),
-  },
-  {
-    id: "task-6",
-    title: "Ghibli Art Post",
-    description: "Design Studio Ghibli inspired artwork for social media",
-    priority: "low",
-    tags: ["design"],
-    column: "done",
-    createdBy: "bot",
-    createdAt: new Date(Date.now() - 518400000).toISOString(),
-  },
-  {
-    id: "task-7",
-    title: "Report + Clearance certificate",
-    description: "Complete quarterly report and obtain clearance certificate",
-    priority: "high",
-    tags: ["research"],
-    column: "done",
-    createdBy: "user",
-    createdAt: new Date(Date.now() - 604800000).toISOString(),
+    id: 'task-5',
+    title: 'Research competitor features',
+    description: 'Analyze competitors and create comparison report',
+    priority: 'medium',
+    tags: ['research'],
+    column: 'done',
+    createdBy: 'bot',
+    createdAt: '2023-03-25T13:20:00Z',
+    field: 'Research'
   }
 ];
 
+// Sample chat messages
 export const mockChatMessages: ChatMessage[] = [
   {
-    id: "msg-1",
-    text: "Hello! I'm CreodoBot. How can I help you manage your tasks today?",
-    sender: "bot",
-    timestamp: new Date(Date.now() - 3600000).toISOString(),
+    id: 'msg-1',
+    text: 'Hello! I\'m CreodoBot, your productivity assistant. How can I help you today?',
+    sender: 'bot',
+    timestamp: '2023-04-05T09:00:00Z'
   },
   {
-    id: "msg-2",
-    text: "Hi CreodoBot, I need help with planning my Instagram reel workflow.",
-    sender: "user",
-    timestamp: new Date(Date.now() - 3500000).toISOString(),
+    id: 'msg-2',
+    text: 'Hi! I need to organize my tasks for the week.',
+    sender: 'user',
+    timestamp: '2023-04-05T09:01:30Z'
   },
   {
-    id: "msg-3",
-    text: "I'll help you plan your Instagram reel workflow! Here are the key tasks I'm adding to your board:\n\n1. Storyboard concept\n2. Shoot footage\n3. Edit in Lightroom\n4. Schedule post",
-    sender: "bot",
-    timestamp: new Date(Date.now() - 3400000).toISOString(),
+    id: 'msg-3',
+    text: 'Sure, I can help with that. What specific tasks do you need to organize?',
+    sender: 'bot',
+    timestamp: '2023-04-05T09:01:45Z'
   },
   {
-    id: "msg-4",
-    text: "That looks good, but can you add one more task for music selection?",
-    sender: "user",
-    timestamp: new Date(Date.now() - 3300000).toISOString(),
-  },
-  {
-    id: "msg-5",
-    text: "Absolutely! I've added 'Select background music' to your workflow. Based on the nature of these tasks, I've set most as medium priority and tagged them with 'design'. Is there anything else you'd like me to adjust?",
-    sender: "bot",
-    timestamp: new Date(Date.now() - 3200000).toISOString(),
+    id: 'msg-4',
+    text: 'I need to prepare a presentation for Monday and finish the quarterly report.',
+    sender: 'user',
+    timestamp: '2023-04-05T09:02:30Z'
   }
 ];

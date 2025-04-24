@@ -5,47 +5,6 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 142 69% 58%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -73,6 +32,17 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 220 26% 14%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 142 69% 58%;
+    --sidebar-primary-foreground: 222.2 47.4% 11.2%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 20%;
+    --sidebar-ring: 212.7 26.8% 83.9%;
   }
 }
 
@@ -91,7 +61,7 @@
 }
 
 .task-column {
-  @apply bg-muted/50 rounded-lg p-3 min-h-[500px] w-full border;
+  @apply bg-muted/20 rounded-lg p-3 min-h-[500px] w-full border;
 }
 
 .tag {
@@ -99,27 +69,27 @@
 }
 
 .priority-low {
-  @apply bg-green-100 text-green-800;
+  @apply bg-green-900/30 text-green-300 border-green-700;
 }
 
 .priority-medium {
-  @apply bg-yellow-100 text-yellow-800;
+  @apply bg-yellow-900/30 text-yellow-300 border-yellow-700;
 }
 
 .priority-high {
-  @apply bg-red-100 text-red-800;
+  @apply bg-red-900/30 text-red-300 border-red-700;
 }
 
 .tag-feature {
-  @apply bg-blue-100 text-blue-800;
+  @apply bg-blue-900/30 text-blue-300 border-blue-700;
 }
 
 .tag-research {
-  @apply bg-purple-100 text-purple-800;
+  @apply bg-purple-900/30 text-purple-300 border-purple-700;
 }
 
 .tag-design {
-  @apply bg-pink-100 text-pink-800;
+  @apply bg-pink-900/30 text-pink-300 border-pink-700;
 }
 
 .droppable-container {
