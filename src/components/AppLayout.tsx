@@ -1,17 +1,24 @@
-
 import { useState } from "react";
 import { Task } from "../types";
 import KanbanBoard from "./KanbanBoard";
 import ChatInterface from "./ChatInterface";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check } from "lucide-react";
+import { Check, User, Settings, Target, Flag } from "lucide-react";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu"
 
 const AppLayout = () => {
   const { toast } = useToast();
   const [chatAddedTasks, setChatAddedTasks] = useState<Task[]>([]);
-  
+
   const handleTaskUpdate = (task: Task) => {
     toast({
       title: "Task updated",
@@ -30,9 +37,43 @@ const AppLayout = () => {
   return (
     <div className="container mx-auto py-6 px-4 h-screen flex flex-col bg-[#0A0A0A]">
       <header className="mb-6">
-        <div className="flex items-center gap-2">
-          <Check className="h-5 w-5 text-primary rounded-full p-0.5 bg-primary/20" />
-          <h1 className="text-xl font-semibold text-white">Task boat</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Check className="h-5 w-5 text-primary rounded-full p-0.5 bg-primary/20" />
+            <h1 className="text-xl font-semibold text-white">Task boat</h1>
+          </div>
+          
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="bg-transparent hover:bg-[#191919] text-gray-400">
+                  <User className="mr-2 h-4 w-4" />
+                  Profile
+                </NavigationMenuTrigger>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="bg-transparent hover:bg-[#191919] text-gray-400">
+                  <Target className="mr-2 h-4 w-4" />
+                  Goals
+                </NavigationMenuTrigger>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="bg-transparent hover:bg-[#191919] text-gray-400">
+                  <Flag className="mr-2 h-4 w-4" />
+                  Projects
+                </NavigationMenuTrigger>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="bg-transparent hover:bg-[#191919] text-gray-400">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
+                </NavigationMenuTrigger>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
         <p className="text-sm text-gray-400 ml-7">
           Clear power task management system
