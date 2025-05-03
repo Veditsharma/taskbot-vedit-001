@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ChatMessage, Task } from "../types";
-import { supabase } from "@/integrations/supabase/client";
+import { callGeminiApi } from "@/utils/geminiApi";
 import ChatMessageList from "./ChatMessageList";
 import ChatInputForm from "./ChatInputForm";
 import ChatHeader from "./ChatHeader";
@@ -76,26 +76,18 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
         .slice(-5)  // Send only the last 5 messages for context
         .map(({ text, sender, timestamp }) => ({ text, sender, timestamp }));
       
-      // Call the Gemini API through our edge function
-      const { data, error } = await supabase.functions.invoke('gemini-chat', {
-        body: { 
-          message,
-          context: "You are an assistant for a task management app. Help the user manage their tasks, suggest new tasks, and answer questions about productivity.",
-          history: messageHistory
-        }
-      });
-      
-      if (error) throw new Error(error.message);
+      // Call the Gemini API through our utility function
+      const response = await callGeminiApi(message, messageHistory);
       
       // Remove typing indicator and add the AI response
       setChatHistory(prev => prev.filter(msg => !msg.isTyping));
       
       const botResponse: ChatMessage = {
         id: `msg-${Date.now() + 1}`,
-        text: data.text,
+        text: response.text,
         sender: "bot",
         timestamp: new Date().toISOString(),
-        taskSuggestions: data.taskSuggestions,
+        taskSuggestions: response.taskSuggestions,
       };
       
       setChatHistory(prev => [...prev, botResponse]);
@@ -150,6 +142,52 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
     setChatHistory(prev => [...prev, rejectionMessage]);
   };
 
+  // Handle creating a task from conversation
+  const handleTaskFromConversation = (title: string, description: string) => {
+    // Create task object
+    const newTask: Task = {
+      id: `task-${Date.now()}`,
+      title: title.length > 60 ? title.substring(0, 57) + '...' : title,
+      description: description || title,
+      priority: "high", // Default to high as shown in the example image
+      tags: ["ai-generated"],
+      column: "not-started",
+      createdBy: "bot",
+      createdAt: new Date().toISOString(),
+      deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days from now
+      field: "Development" // Default field from the example image
+    };
+    
+    onAddTask(newTask);
+    
+    toast({
+      title: "Task created",
+      description: `"${newTask.title}" has been added to your board.`,
+    });
+    
+    const confirmationMessage: ChatMessage = {
+      id: `msg-${Date.now()}`,
+      text: `I've created a task "${newTask.title}" from our conversation and added it to your board.`,
+      sender: "bot",
+      timestamp: new Date().toISOString(),
+    };
+    
+    setChatHistory(prev => [...prev, confirmationMessage]);
+  };
+  
+  // Handle removing quick actions
+  const handleRemoveQuickActions = (messageId: string) => {
+    // Add a small confirmation message
+    const confirmationMessage: ChatMessage = {
+      id: `msg-${Date.now()}`,
+      text: "I've removed the task suggestion.",
+      sender: "bot",
+      timestamp: new Date().toISOString(),
+    };
+    
+    setChatHistory(prev => [...prev, confirmationMessage]);
+  };
+
   return (
     <div className="flex flex-col h-full border border-gray-800 rounded-xl overflow-hidden bg-[#121212]">
       <ChatHeader />
@@ -164,7 +202,9 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
           <ChatMessageList 
             messages={chatHistory} 
             onAddTask={handleAddTask} 
-            onRejectTask={handleRejectTask} 
+            onRejectTask={handleRejectTask}
+            onTaskFromConversation={handleTaskFromConversation}
+            onRemoveQuickActions={handleRemoveQuickActions}
           />
         )}
         <div ref={messagesEndRef} />

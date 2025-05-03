@@ -9,7 +9,7 @@ const ChatHeader = () => {
         <MessageSquare size={18} className="text-primary" />
       </div>
       <div>
-        <h2 className="font-semibold text-white">AI Assistant</h2>
+        <h2 className="font-semibold text-white">AI Task Assistant</h2>
         <p className="text-xs text-gray-400">
           Powered by Google Gemini AI
         </p>

@@ -2,14 +2,57 @@
 import { format } from "date-fns";
 import { ChatMessage, Task } from "../types";
 import TaskSuggestionForm from "./TaskSuggestionForm";
+import ChatQuickActions from "./ChatQuickActions";
 
 interface ChatMessageListProps {
   messages: ChatMessage[];
   onAddTask: (task: Task) => void;
   onRejectTask: (messageId: string) => void;
+  onTaskFromConversation?: (title: string, description: string) => void;
+  onRemoveQuickActions?: (messageId: string) => void;
 }
 
-const ChatMessageList = ({ messages, onAddTask, onRejectTask }: ChatMessageListProps) => {
+const ChatMessageList = ({ 
+  messages, 
+  onAddTask, 
+  onRejectTask,
+  onTaskFromConversation,
+  onRemoveQuickActions
+}: ChatMessageListProps) => {
+  // Helper function to detect conversation ending phrases
+  const isConversationEnding = (text: string): boolean => {
+    const endingPhrases = [
+      "okay", "ok", "cool", "thanks", "thank you", 
+      "got it", "understood", "makes sense", "clear",
+      "great", "perfect", "excellent", "done", "sounds good",
+      "alright", "fine"
+    ];
+    
+    const lowerText = text.toLowerCase().trim();
+    return endingPhrases.some(phrase => 
+      lowerText === phrase || 
+      lowerText.startsWith(`${phrase} `) || 
+      lowerText.endsWith(` ${phrase}`) ||
+      lowerText.includes(` ${phrase} `)
+    );
+  };
+
+  // Find last user message to check if it's a conversation ender
+  const lastUserMessageIndex = [...messages].reverse().findIndex(msg => msg.sender === "user");
+  const lastUserMessage = lastUserMessageIndex !== -1 
+    ? messages[messages.length - 1 - lastUserMessageIndex] 
+    : null;
+  
+  // Only show quick actions after a conversation ending message from user with no pending task suggestions
+  const showQuickActions = lastUserMessage && 
+    isConversationEnding(lastUserMessage.text) &&
+    !messages.some(msg => msg.taskSuggestions && msg.taskSuggestions.length > 0);
+
+  // If we have a conversation about a task, use it for quick actions
+  const lastMeaningfulBotMessage = messages
+    .filter(m => m.sender === "bot" && !m.isTyping && m.text.length > 20)
+    .pop();
+    
   return (
     <div className="space-y-4">
       {messages.map((msg) => (
@@ -51,6 +94,19 @@ const ChatMessageList = ({ messages, onAddTask, onRejectTask }: ChatMessageListP
                 />
               ))}
             </div>
+          )}
+          
+          {/* Show quick actions if this is the last user message and it's a conversation ender */}
+          {showQuickActions && msg.id === lastUserMessage?.id && lastMeaningfulBotMessage && onTaskFromConversation && onRemoveQuickActions && (
+            <ChatQuickActions
+              taskTitle={lastMeaningfulBotMessage.text.split('.')[0].trim()}
+              taskDescription={lastMeaningfulBotMessage.text}
+              onAddTask={() => onTaskFromConversation(
+                lastMeaningfulBotMessage.text.split('.')[0].trim(),
+                lastMeaningfulBotMessage.text
+              )}
+              onRemove={() => onRemoveQuickActions(msg.id)}
+            />
           )}
         </div>
       ))}
