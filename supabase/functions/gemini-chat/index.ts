@@ -32,7 +32,7 @@ serve(async (req) => {
       });
       messages.push({
         role: "model",
-        parts: [{ text: "I'll help you manage your tasks as requested." }]
+        parts: [{ text: "I'll help you manage your tasks as requested. I'll be concise and practical." }]
       });
     }
     
@@ -55,8 +55,6 @@ serve(async (req) => {
       parts: [{ text: message }]
     });
 
-    console.log("Sending to Gemini:", JSON.stringify(messages, null, 2));
-
     // API call to Google Gemini
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" + apiKey,
@@ -78,10 +76,9 @@ serve(async (req) => {
     );
 
     const data = await response.json();
-    console.log("Gemini response:", JSON.stringify(data, null, 2));
     
     // Extract the response text
-    let responseText;
+    let responseText = "";
     if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
       responseText = data.candidates[0].content.parts[0].text;
     } else {
@@ -113,12 +110,18 @@ serve(async (req) => {
 // Helper function to extract potential task suggestions from AI response
 function extractTaskSuggestions(userMessage, aiResponse) {
   // Check if the message seems like a task creation request
-  const taskKeywords = ['create task', 'add task', 'new task', 'make task', 'schedule', 'todo', 'to-do', 'to do'];
+  const taskKeywords = ['create task', 'add task', 'new task', 'make task', 'schedule', 'todo', 'to-do', 'to do', 'remind me'];
   const containsTaskKeyword = taskKeywords.some(keyword => 
     userMessage.toLowerCase().includes(keyword)
   );
   
-  if (!containsTaskKeyword) {
+  // If no task keywords, check if the response seems to suggest a task
+  const suggestTaskKeywords = ['I suggest creating a task', 'you should create a task', 'I recommend adding', 'add this to your tasks'];
+  const aiSuggestsTask = suggestTaskKeywords.some(keyword => 
+    aiResponse.toLowerCase().includes(keyword)
+  );
+  
+  if (!containsTaskKeyword && !aiSuggestsTask) {
     return null;
   }
   

@@ -91,47 +91,21 @@
 }
 
 .chat-input {
-  @apply bg-[#0A0A0A] border border-gray-800 rounded-2xl;
+  @apply bg-[#0A0A0A] border border-gray-800 rounded-xl p-3 focus:ring-1 focus:ring-primary/50 focus:border-primary/50 outline-none;
 }
 
-.task-suggestion-card {
-  @apply bg-[#0A0A0A] rounded-3xl p-6 border border-gray-800/50;
-}
-
-.task-suggestion-title {
-  @apply text-2xl font-bold text-white mb-3;
-}
-
-.task-suggestion-description {
-  @apply text-gray-400 text-lg mb-6;
-}
-
-.task-suggestion-tags {
-  @apply flex flex-wrap gap-3 items-center mb-6;
-}
-
-.tag-development {
-  @apply flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400;
-}
-
-.tag-date {
-  @apply flex items-center gap-2 px-4 py-2 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400;
-}
-
-.tag-priority-high {
-  @apply flex items-center gap-2 px-4 py-2 rounded-full border border-red-500/30 bg-red-500/10 text-red-400;
-}
-
-.task-suggestion-actions {
-  @apply flex justify-end gap-3;
-}
-
-.btn-add-task {
-  @apply px-6 py-3 bg-yellow-300 hover:bg-yellow-400 text-black font-semibold rounded-full transition-colors;
-}
-
+/* Remove old styles that are no longer needed */
+.task-suggestion-card,
+.task-suggestion-title,
+.task-suggestion-description,
+.task-suggestion-tags,
+.tag-development,
+.tag-date,
+.tag-priority-high,
+.task-suggestion-actions,
+.btn-add-task,
 .btn-remove {
-  @apply px-6 py-3 bg-pink-400 hover:bg-pink-500 text-white font-semibold rounded-full transition-colors;
+  /* These styles are now defined inline or in the component */
 }
 
 .task-edit-dialog {
