@@ -1,14 +1,13 @@
 
 import { useState, useRef, useEffect } from "react";
-import { Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { ChatMessage, Task } from "../types";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import TaskSuggestionForm from "./TaskSuggestionForm";
+import { ChatMessage, Task } from "../types";
 import { supabase } from "@/integrations/supabase/client";
 import ChatMessageList from "./ChatMessageList";
+import ChatInputForm from "./ChatInputForm";
+import ChatHeader from "./ChatHeader";
+import ChatStateIndicator from "./ChatStateIndicator";
 
 interface ChatInterfaceProps {
   onSendMessage: (message: string) => void;
@@ -16,7 +15,6 @@ interface ChatInterfaceProps {
 }
 
 const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
-  const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
@@ -46,8 +44,7 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendMessage = async (message: string) => {
     if (!message.trim() || isSending) return;
     
     setIsSending(true);
@@ -61,7 +58,6 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
 
     setChatHistory(prev => [...prev, userMessage]);
     onSendMessage(message);
-    setMessage("");
 
     try {
       // Add typing indicator
@@ -156,25 +152,15 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
 
   return (
     <div className="flex flex-col h-full border border-gray-800 rounded-xl overflow-hidden bg-[#121212]">
-      <div className="p-4 border-b border-gray-800 bg-[#121212]">
-        <h2 className="font-semibold text-white">AI Assistant</h2>
-        <p className="text-sm text-gray-400">
-          Powered by Google Gemini AI
-        </p>
-      </div>
+      <ChatHeader />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-400">Connecting to AI assistant...</p>
-          </div>
-        ) : chatHistory.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-center text-gray-400">
-              Start chatting with your AI assistant!
-            </p>
-          </div>
-        ) : (
+        <ChatStateIndicator 
+          isLoading={isLoading} 
+          isEmpty={chatHistory.length === 0} 
+        />
+        
+        {!isLoading && chatHistory.length > 0 && (
           <ChatMessageList 
             messages={chatHistory} 
             onAddTask={handleAddTask} 
@@ -184,33 +170,7 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
         <div ref={messagesEndRef} />
       </div>
 
-      <form onSubmit={handleSubmit} className="p-4 border-t border-gray-800">
-        <div className="flex gap-2">
-          <Textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Ask me anything or tell me to create a task..."
-            className="chat-input min-h-[44px] resize-none"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                if (message.trim() && !isSending) {
-                  handleSubmit(e);
-                }
-              }
-            }}
-            disabled={isSending}
-          />
-          <Button 
-            type="submit" 
-            size="icon"
-            className="bg-primary hover:bg-primary/90"
-            disabled={!message.trim() || isSending}
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </form>
+      <ChatInputForm onSendMessage={handleSendMessage} isSending={isSending} />
     </div>
   );
 };
