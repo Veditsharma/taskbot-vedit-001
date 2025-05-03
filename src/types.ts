@@ -18,6 +18,7 @@ export interface ChatMessage {
   sender: "user" | "bot";
   timestamp: string;
   taskSuggestions?: Task[]; // Added task suggestions
+  isTyping?: boolean; // Added for typing indicator
 }
 
 export interface Column {
