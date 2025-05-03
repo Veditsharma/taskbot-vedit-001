@@ -1,16 +1,14 @@
 
 import { useState, useRef, useEffect } from "react";
-import { Send, Plus, X, Calendar } from "lucide-react";
+import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ChatMessage, Task, FIELD_OPTIONS } from "../types";
-import { mockChatMessages } from "../mock-data";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { ChatMessage, Task } from "../types";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import TaskSuggestionForm from "./TaskSuggestionForm";
 import { supabase } from "@/integrations/supabase/client";
+import ChatMessageList from "./ChatMessageList";
 
 interface ChatInterfaceProps {
   onSendMessage: (message: string) => void;
@@ -77,11 +75,17 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
       
       setChatHistory(prev => [...prev, typingMessage]);
       
+      // Prepare recent message history for context
+      const messageHistory = chatHistory.filter(msg => !msg.isTyping)
+        .slice(-5)  // Send only the last 5 messages for context
+        .map(({ text, sender, timestamp }) => ({ text, sender, timestamp }));
+      
       // Call the Gemini API through our edge function
       const { data, error } = await supabase.functions.invoke('gemini-chat', {
         body: { 
           message,
-          context: "You are an assistant for a task management app. Help the user manage their tasks, suggest new tasks, and answer questions about productivity."
+          context: "You are an assistant for a task management app. Help the user manage their tasks, suggest new tasks, and answer questions about productivity.",
+          history: messageHistory
         }
       });
       
@@ -171,42 +175,11 @@ const ChatInterface = ({ onSendMessage, onAddTask }: ChatInterfaceProps) => {
             </p>
           </div>
         ) : (
-          chatHistory.map((msg) => (
-            <div key={msg.id} className="space-y-4">
-              <div className={`chat-message ${msg.sender === "user" ? "user" : "bot"}`}>
-                {msg.isTyping ? (
-                  <div className="flex space-x-1">
-                    <span className="animate-bounce delay-0">.</span>
-                    <span className="animate-bounce delay-150">.</span>
-                    <span className="animate-bounce delay-300">.</span>
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-gray-200">{msg.text}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {new Date(msg.timestamp).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  </>
-                )}
-              </div>
-              
-              {msg.taskSuggestions && msg.taskSuggestions.length > 0 && (
-                <div className="space-y-4">
-                  {msg.taskSuggestions.map((task) => (
-                    <TaskSuggestionForm
-                      key={task.id}
-                      task={task}
-                      onSave={handleAddTask}
-                      onCancel={() => handleRejectTask(msg.id)}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          ))
+          <ChatMessageList 
+            messages={chatHistory} 
+            onAddTask={handleAddTask} 
+            onRejectTask={handleRejectTask} 
+          />
         )}
         <div ref={messagesEndRef} />
       </div>
