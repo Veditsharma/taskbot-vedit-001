@@ -2,7 +2,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, X } from "lucide-react";
-import { Task } from "../types";
 
 interface ChatQuickActionsProps {
   taskTitle: string;

@@ -16,6 +16,7 @@ serve(async (req) => {
   try {
     const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) {
+      console.error("Missing Gemini API key");
       throw new Error('Missing Gemini API key');
     }
 
@@ -55,6 +56,8 @@ serve(async (req) => {
       parts: [{ text: message }]
     });
 
+    console.log("Sending request to Gemini API with messages:", JSON.stringify(messages));
+
     // API call to Google Gemini
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" + apiKey,
@@ -77,13 +80,19 @@ serve(async (req) => {
 
     const data = await response.json();
     
+    if (!response.ok) {
+      console.error("Gemini API error:", JSON.stringify(data));
+      throw new Error(`Gemini API error: ${data.error?.message || 'Unknown error'}`);
+    }
+    
     // Extract the response text
     let responseText = "";
     if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
       responseText = data.candidates[0].content.parts[0].text;
+      console.log("Received response from Gemini:", responseText.substring(0, 100) + "...");
     } else {
-      console.error("Error in Gemini response:", data);
-      responseText = "I'm sorry, I couldn't generate a response.";
+      console.error("Unexpected response format from Gemini:", JSON.stringify(data));
+      throw new Error("Invalid response format from Gemini API");
     }
 
     // Check if the message contains task suggestions
